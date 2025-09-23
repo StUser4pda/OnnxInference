@@ -27,13 +27,13 @@ jobs:
       - name: Archive build output
         run: |
           mkdir artifact
-          Compress-Archive -Path .\bin\* -DestinationPath artifact\OnnxInference.zip
+          Compress-Archive -Path .\bin\* -DestinationPath artifact/OnnxInference.zip
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.event.inputs.tag }}
           name: Release ${{ github.event.inputs.tag }}
-          files: artifact\OnnxInference.zip
+          files: artifact/OnnxInference.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
