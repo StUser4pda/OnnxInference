@@ -1,0 +1,34 @@
+name: Build and Release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-and-release:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x' # Needed just to run dotnet CLI
+
+      - name: Build project
+        run: dotnet build -f net48 -c Release
+
+      - name: Archive build output
+        run: |
+          mkdir artifact
+          Compress-Archive -Path .\bin\* -DestinationPath artifact\OnnxInference.zip
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
+          files: artifact/OnnxInference.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
