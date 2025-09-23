@@ -13,8 +13,10 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GH_TOKEN }} # Enables push access
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -28,14 +30,7 @@ jobs:
         run: |
           mkdir artifact
           Compress-Archive -Path .\bin\* -DestinationPath artifact/OnnxInference.zip
-
-      - name: Create tag if not exists
-        run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-          git tag v1.0.0 || echo "Tag exists"
-          git push origin v1.0.0 || echo "Tag already pushed"
-   
+  
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
@@ -43,4 +38,4 @@ jobs:
           name: Release ${{ github.event.inputs.tag }}
           files: artifact/OnnxInference.zip
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
